@@ -3,13 +3,13 @@ let gTabs;
 function month_str(date) {
     return date.getFullYear().toString().slice(2, 4)
            + "."
-           + (date.getMonth() + 1).toString()
+           + ("00" + (date.getMonth() + 1).toString()).slice(-2);
 }
 
 function entry_prefix(date) {
     return date.getDate().toString()
            + "."
-           + date.getHours().toString()
+           + ("00" + date.getHours().toString()).slice(-2)
            + ":"
            + ("00" + date.getMinutes().toString()).slice(-2);
 }
@@ -21,11 +21,18 @@ function add_tabs(node, date) {
     let promiseList = [];
     let counter = 0;
     for (let tab of gTabs) {
-        promiseList.push(browser.bookmarks.create({
-            parentId: node.id,
-            title: prefix + " " + counter.toString() + " " + tab.title, url: tab.url
-        }));
-        counter++;
+        if (gTabs.length == 1) {
+            promiseList.push(browser.bookmarks.create({
+                parentId: node.id,
+                title: prefix + " " + tab.title, url: tab.url
+            }));
+        } else {
+            promiseList.push(browser.bookmarks.create({
+                parentId: node.id,
+                title: prefix + " " + counter.toString() + " " + tab.title, url: tab.url
+            }));
+            counter++;
+        }
     }
     return Promise.all(promiseList);
 }
