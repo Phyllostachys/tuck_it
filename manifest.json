@@ -1,0 +1,21 @@
+{
+    "manifest_version": 2,
+    "name": "Tuck-It",
+    "version": "0.1",
+
+    "description": "Adds button that tucks away tabs into bookmark folders based on date.",
+
+    "permissions": [
+        "activeTab",
+        "tabs",
+        "bookmarks"
+    ],
+
+    "browser_action": {
+        "default_icon": "icons/tuck-it-32.png"
+    },
+
+    "background": {
+        "scripts": ["tuck_it.js"]
+    }
+}
