@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Tuck-It",
-    "version": "0.2",
+    "version": "0.3",
 
     "description": "Adds button that tucks away tabs into bookmark folders based on date.",
 
