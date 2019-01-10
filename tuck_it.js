@@ -11,7 +11,7 @@ function month_str(date) {
 }
 
 function entry_prefix(date) {
-    return date.getDate().toString()
+    return zero_pad_left(date.getDate(), 2)
            + "."
            + zero_pad_left(date.getHours(), 2)
            + ":"
@@ -30,7 +30,6 @@ function add_tabs(node, date) {
             }));
         } else {
             let count_str = zero_pad_left(counter, gTabs.length.toString().length);
-            //("0000000" + counter.toString()).slice(-1 * gTabs.length.toString().length);
             promiseList.push(browser.bookmarks.create({
                 parentId: node.id,
                 title: prefix
