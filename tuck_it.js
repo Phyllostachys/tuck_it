@@ -1,25 +1,27 @@
 let gTabs;
 
+function zero_pad_left(num, digits) {
+    return ("0".repeat(digits) + num.toString()).slice(-1 * digits);
+}
+
 function month_str(date) {
     return date.getFullYear().toString().slice(2, 4)
            + "."
-           + ("00" + (date.getMonth() + 1).toString()).slice(-2);
+           + zero_pad_left(date.getMonth() + 1, 2);
 }
 
 function entry_prefix(date) {
     return date.getDate().toString()
            + "."
-           + ("00" + date.getHours().toString()).slice(-2)
+           + zero_pad_left(date.getHours(), 2)
            + ":"
-           + ("00" + date.getMinutes().toString()).slice(-2);
+           + zero_pad_left(date.getMinutes(), 2);
 }
 
 function add_tabs(node, date) {
-    //console.log("add_tabs");
-    //console.log(node);
     let prefix = entry_prefix(date);
     let promiseList = [];
-    let counter = 0;
+    let counter = 1;
     for (let tab of gTabs) {
         if (gTabs.length == 1) {
             promiseList.push(browser.bookmarks.create({
@@ -27,9 +29,16 @@ function add_tabs(node, date) {
                 title: prefix + " " + tab.title, url: tab.url
             }));
         } else {
+            let count_str = zero_pad_left(counter, gTabs.length.toString().length);
+            //("0000000" + counter.toString()).slice(-1 * gTabs.length.toString().length);
             promiseList.push(browser.bookmarks.create({
                 parentId: node.id,
-                title: prefix + " " + counter.toString() + " " + tab.title, url: tab.url
+                title: prefix
+                       + " "
+                       + (gTabs.length > 9 ? count_str : count_str.slice(-1))
+                       + " "
+                       + tab.title,
+                url: tab.url
             }));
             counter++;
         }
@@ -46,7 +55,6 @@ async function print_tabs(tabs) {
     let date = new Date();
 
     let lks_results = await browser.bookmarks.search("lks");
-    //console.log(lks_results);
 
     let lks_node;
     let month_node;
@@ -55,9 +63,7 @@ async function print_tabs(tabs) {
         lks_node = await browser.bookmarks.create({parentId: "toolbar_____", title: "lks"});
         month_node = await browser.bookmarks.create({parentId: lks_node.id, title: month_str(date)});
     } else {
-        //console.log(lks_results[0]);
         lks_node = lks_results[0];
-
         let month_result = await browser.bookmarks.search(month_str(date));
         if (month_result == 0) {
             // create month folder
