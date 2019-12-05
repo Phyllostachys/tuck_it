@@ -6,7 +6,7 @@ function zero_pad_left(num, digits) {
 
 function month_str(date) {
     return date.getFullYear().toString().slice(2, 4)
-           + "."
+           + "_"
            + zero_pad_left(date.getMonth() + 1, 2);
 }
 
