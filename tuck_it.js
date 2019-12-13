@@ -53,25 +53,48 @@ async function print_tabs(tabs) {
     gTabs = tabs;
     let date = new Date();
 
-    let lks_results = await browser.bookmarks.search("lks");
+    let root_search_list = await browser.bookmarks.search({title: "tuck_it"});
+    console.log('tuck_it = ', root_search_list);
 
-    let lks_node;
-    let month_node;
-    if (lks_results.length == 0) {
+    let tuck_it_node = 0;
+    let month_node = 0;
+    if (root_search_list.length == 0) {
         // Need to create the folder structure
-        lks_node = await browser.bookmarks.create({parentId: "toolbar_____", title: "lks"});
-        month_node = await browser.bookmarks.create({parentId: lks_node.id, title: month_str(date)});
+        console.log("Creating tuck_it folder at bookmarks toolbar...")
+        tuck_it_node = await browser.bookmarks.create({parentId: "toolbar_____", title: "tuck_it"});
+        month_node = await browser.bookmarks.create({parentId: tuck_it_node.id, title: month_str(date)});
     } else {
-        lks_node = lks_results[0];
-        let month_result = await browser.bookmarks.search(month_str(date));
-        if (month_result == 0) {
-            // create month folder
-            month_node = await browser.bookmarks.create({parentId: lks_node.id, title: month_str(date)});
-        } else {
-            month_node = month_result[0];
+        for (const item of root_search_list) {
+            if (item.type === "folder" && item.title === "tuck_it") {
+                tuck_it_node = item;
+                break;
+            }
         }
     }
 
+    if (tuck_it_node == 0) {
+        console.log("Failed to find folder tuck_it");
+        return;
+    } else {
+        let month_result = await browser.bookmarks.search(month_str(date));
+        if (month_result == 0) {
+            // create month folder
+            month_node = await browser.bookmarks.create({parentId: tuck_it_node.id, title: month_str(date)});
+        } else {
+            for (const item of month_result) {
+                if (item.type === "folder" && item.title === month_str(date) && item.parentId == tuck_it_node.id)
+                    month_node = item;
+            }
+        }
+    }
+
+    if (month_node == 0) {
+        console.log("Failed to find month folder");
+        return;
+    }
+
+    console.log("tuck_it_node = ", tuck_it_node);
+    console.log("month_node = ", month_node);
     add_tabs(month_node, date).catch(error_print);
 }
 
