@@ -106,4 +106,4 @@ function tuck_it_action() {
     browser.tabs.query({currentWindow: true}).then(print_tabs, onError);
 }
 
-browser.browserAction.onClicked.addListener(tuck_it_action);
+browser.action.onClicked.addListener(tuck_it_action);
